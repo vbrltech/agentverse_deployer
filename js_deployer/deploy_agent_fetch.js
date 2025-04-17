@@ -1,12 +1,21 @@
 // Node.js script to deploy an agent using fetch
 
 const AGENT_NAME = "My Fetch Deployed Agent";
-// API Token should ideally be an environment variable for security
-const API_TOKEN = process.env.AGENTVERSE_API_TOKEN || "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE3NDc0MDc0NjksImlhdCI6MTc0NDgxNTQ2OSwiaXNzIjoiZmV0Y2guYWkiLCJqdGkiOiJkYjQ1M2VhNDEwNTU0NDZmZmE3OTMyNjkiLCJzY29wZSI6ImF2Iiwic3ViIjoiMDVkMmI5ODAxZmVhYzVmMTJmM2U2M2M0ZDhjNWVjMTA4YmU5NWFiOTQ4YTUxM2U0In0.RJ7_crqubp5KaVC6hwMZAlNOFDf70bhgJ8Fix7yt8xVD3lxmbS1OoTOSvk50IePy4TH2rJQYH0k56g3KGqYTgUSnOlRqFNj9FQCXGeLrT89KtGqSylvqmLezMS4owg0Yl9-Rn91kYCy18FikaJT44LTZlJ7uxTd6tZiACwxq-jKQkgFX6oLYUqd7nhOK57_QCBJ2SkfsYlBj0LQVyljmqUoL2s-HgsGx6JRmTmzwaShX7Js5tTT5AX-VEIxY-Sl2DoqbHxGYcSZaEAUDn7Qw7Pru4AOEhSCh7dGFhndfMe4ugDZFBhPnBkkZmr0buMUi7ESco0aGwCpT-41YjBzTLg"; // Fallback token
+
+// Get API Token: Prioritize command-line arg, then environment variable
+const API_TOKEN = process.argv[2] || process.env.AGENTVERSE_API_TOKEN;
+
+if (!API_TOKEN) {
+    console.error("Error: API Token not provided.");
+    console.error("Usage: node deploy_agent_fetch.js <YOUR_API_TOKEN>");
+    console.error("Alternatively, set the AGENTVERSE_API_TOKEN environment variable.");
+    process.exit(1);
+}
+
 const BASE_URL = "https://agentverse.ai/v1/hosting";
 
 const HEADERS = {
-    "Authorization": `Bearer ${API_TOKEN}`, // Correct format: Bearer <token>
+    "Authorization": `Bearer ${API_TOKEN}`, // Use the sourced token
     "Content-Type": "application/json"
 };
 
@@ -86,14 +95,7 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Main deployment function
 async function deployAgent() {
-     // Check if token is missing or still the placeholder
-     if (!API_TOKEN || API_TOKEN.includes("<")) { // Check includes placeholder too
-        console.error("Error: API_TOKEN is not set or is a placeholder.");
-        console.error("Please set the AGENTVERSE_API_TOKEN environment variable or replace the placeholder in the script.");
-        process.exit(1);
-    }
-
-    // Headers are defined globally using the token (either from env var or fallback)
+    // Token check is now done earlier
 
     let agentAddress = null;
 
